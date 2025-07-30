@@ -1,0 +1,79 @@
+div.fields {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+div.fields:hover > fieldset.field-container > legend,
+div.fields:focus > fieldset.field-container > legend {
+    visibility: visible;
+    opacity: 1;
+}
+
+div.fields > fieldset.field-container {
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #111;
+    background-color: #fff;
+}
+
+div.fields > fieldset.field-container > legend {
+    position: absolute;
+    top: -30px;
+    left: 10px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    font-size: 12px;
+    line-height: 12px;
+    color: #fff;
+    padding: 7px 10px;
+    border-radius: 5px;
+    background-color: #111;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 20px;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #111;
+    }
+}
+
+div.fields > fieldset.field-container > legend > span {
+    font-size: 12px;
+    font-weight: bold;
+    color: red;
+    margin-left: 3px;
+}
+
+div.fields > fieldset.field-container > input {
+    width: 100%;
+    padding: 10px 30px 10px 10px;
+    border: 0;
+    border-radius: 10px;
+}
+
+div.fields > fieldset.field-container > i {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    cursor: pointer;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 100%;
+    border-radius: 0 5px 5px 0;
+    color: #fff;
+    background-color: #111;
+}

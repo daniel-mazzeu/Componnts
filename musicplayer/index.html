@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <!-- Metatags -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="description" content="...">
+        <meta name="keywords" content="...">
+        <meta name="author" content="...">
+        <meta name="robots" content="index, follow">
+
+        <!-- Title -->
+        <title>Music Player</title>
+
+        <!-- Styles -->
+        <link rel="stylesheet" href="global.css">
+        <link rel="stylesheet" href="musicplayer.css">
+
+        <!-- Scripts -->
+        <script defer src="musicplayer.js"></script>
+    </head>
+    <body>
+
+        <!-- Music Player -->
+        <div class="musicplayer">
+            <button type="button"><i class="bi bi-music-note-beamed"></i></button>
+            <div class="musicplayer-base">
+                <div class="musicplayer-effect"></div>
+                <div class="musicplayer-container">
+                    <div class="musicplayer-info">
+                        <h1>Artist</h1>
+                        <p>Music name</p>
+                        <button type="button"><i class="bi bi-x"></i></button>
+                    </div>
+                    <div class="musicplayer-progressbar">
+                        <div class="percentage"></div>
+                    </div>
+                    <div class="musicplayer-control">
+                        <i class="bi bi-repeat" title="Repetir"></i>
+                        <i class="bi bi-skip-backward-fill" title="Anterior"></i>
+                        <i class="bi bi-play-circle-fill" title="Tocar/Pausar"></i>
+                        <i class="bi bi-skip-forward-fill" title="Próxima"></i>
+                        <i class="bi bi-shuffle" title="Embaralhar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
