@@ -58,12 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setActiveLink(linkToActivate) {
-        if (linkToActivate && (linkToActivate.getAttribute('href') && linkToActivate.getAttribute('href').startsWith('#') || !linkToActivate.dataset.href)) {
-             removeActiveClass();
-        } else {
-            return;
-        }
-
+        removeActiveClass();
 
         linkToActivate.classList.add('active');
         currentActiveLink = linkToActivate;
@@ -143,10 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             menuStates.set(menuContainer, state);
-
-            menuContainer.addEventListener('mouseenter', state.openSubmenu);
-            menuContainer.addEventListener('mouseleave', state.closeSubmenu);
-
+            
             menuLink.addEventListener('click', (event) => {
                 event.preventDefault();
 
@@ -167,14 +159,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (state.isSubmenuLockedOpen) {
                         state.isSubmenuLockedOpen = false;
                         state.closeSubmenu();
+                        menuLink.classList.remove('active');
                         menuContainer.classList.remove('active');
                     } else {
                         state.isSubmenuLockedOpen = true;
-                        state.openSubmenu();
+                        if (!menuLink.closest('.submenu')) {
+                            setActiveLink(menuLink);
+                        }
                     }
                 } else {
                     state.isSubmenuLockedOpen = true;
                     state.openSubmenu();
+                    if (!menuLink.closest('.submenu')) {
+                        setActiveLink(menuLink);
+                    }
                 }
             });
 
@@ -183,13 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const activeLinkInsideThisSubmenu = submenu.querySelector('a.active');
                     if (!activeLinkInsideThisSubmenu) {
                         state.closeSubmenu();
+                        menuLink.classList.remove('active');
                         menuContainer.classList.remove('active');
                     }
                 }
             });
 
-        } else {
-            // console.error('Erro: Elements ".link" or ".submenu" were not found.');
         }
     });
 
@@ -214,6 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchTerm === '') {
                 searchableMenuItems.forEach(menuItem => {
                     menuItem.style.display = 'flex';
+                    menuItem.querySelectorAll('.submenu a').forEach(subLink => {
+                        subLink.style.display = 'flex';
+                    });
                 });
 
                 if (activeLinkBeforeSearch) {
@@ -243,12 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     let anySublinkMatches = false;
+                    
                     submenuLinks.forEach(subLink => {
                         const subLinkWasActiveBeforeSearch = (activeLinkBeforeSearch === subLink);
 
                         if (subLink.textContent.toLowerCase().includes(searchTerm)) {
                             matchesSearchTerm = true;
                             anySublinkMatches = true;
+            
+                            subLink.style.display = 'flex'; 
 
                             const parentMenuState = menuStates.get(menuItem);
                             if (parentMenuState) {
@@ -262,6 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             }
                         } else {
+                            subLink.style.display = 'none'; 
+                            
                             if (subLink !== activeLinkBeforeSearch) {
                                 subLink.classList.remove('active');
                             }
@@ -273,13 +278,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const mainLinkOfMenu = menuItem.querySelector('a.link');
                         if (mainLinkOfMenu) {
-                            if ((linkTextElement && linkTextElement.textContent.toLowerCase().includes(searchTerm))) {
+                            if ((linkTextElement && linkTextElement.textContent.toLowerCase().includes(searchTerm)) || mainLinkWasActiveBeforeSearch) {
                                 mainLinkOfMenu.classList.add('active');
                             } else {
                                 mainLinkOfMenu.classList.remove('active');
                             }
                         }
 
+                        // Reativa o link que estava ativo antes, se ele estiver contido neste menu
                         if (activeLinkBeforeSearch && menuItem.contains(activeLinkBeforeSearch)) {
                             activeLinkBeforeSearch.classList.add('active');
                             const parentMenuState = menuStates.get(activeLinkBeforeSearch.closest('.menu'));
@@ -290,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                     } else {
+                        // Oculta o item de menu pai se não houver correspondência
                         menuItem.style.display = 'none';
                         menuItem.classList.remove('active');
                         const mainLinkOfSubmenu = menuItem.querySelector('a.link[data-href="false"]');
@@ -311,37 +318,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function activateLinkFromHash(hash) {
-        if (!hash) return;
-        
-        allMenuLinks.forEach(link => {
-            if (link.getAttribute('href') === hash) {
-                removeActiveClass();
-                link.classList.add('active');
-                activeLinkBeforeSearch = link;
-
-                const parentMenuContainer = link.closest('.menu');
-                if (parentMenuContainer) {
-                    const parentMenuState = menuStates.get(parentMenuContainer);
-                    if (parentMenuState) {
-                        parentMenuState.openSubmenu();
-                        parentMenuState.isSubmenuLockedOpen = true;
-                    }
-                }
-            }
-        });
-    }
-
     allMenuLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             const href = link.getAttribute('href');
             const isAnchorLink = href && href.startsWith('#') && href.length > 1;
-            const isNonAnchorLink = !href || href === '' || !href.startsWith('#');
 
             if (link.dataset.href === 'false' && !link.closest('.submenu')) {
                 event.preventDefault();
-                return; 
-            } else if (!link.dataset.href || isAnchorLink || (link.closest('.submenu') && isNonAnchorLink)) {
+            } else if (!link.dataset.href || isAnchorLink || (link.closest('.submenu') && (!href || href === ''))) {
                 
                 if (isAnchorLink) {
                     event.preventDefault(); 
@@ -355,8 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         history.pushState(null, null, href); 
                         
-                        activateLinkFromHash(href);
-
                         if (sidemenu.classList.contains('toggle')) {
                             const toggleIcon = toggleButton.querySelector('i');
                             sidemenu.classList.remove('toggle');
@@ -370,81 +352,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     event.preventDefault();
                 }
 
-                if (!link.dataset.href) {
-                     menuStates.forEach(s => {
-                        if (s.menuContainer !== link.closest('.menu')) {
-                            s.isSubmenuLockedOpen = false;
-                            s.closeSubmenu();
-                        }
-                    });
+                menuStates.forEach(s => {
+                    if (s.menuContainer !== link.closest('.menu')) {
+                        s.isSubmenuLockedOpen = false;
+                        s.closeSubmenu();
+                    }
+                });
 
-                    setActiveLink(link);
+                setActiveLink(link);
 
-                    activeLinkBeforeSearch = link;
+                activeLinkBeforeSearch = link;
 
-                    const parentMenuContainer = link.closest('.menu');
-                    if (parentMenuContainer) {
-                        const parentMenuState = menuStates.get(parentMenuContainer);
-                        if (parentMenuState) {
-                            parentMenuState.openSubmenu();
-                            parentMenuState.isSubmenuLockedOpen = true;
-                        }
+                const parentMenuContainer = link.closest('.menu');
+                if (parentMenuContainer) {
+                    const parentMenuState = menuStates.get(parentMenuContainer);
+                    if (parentMenuState) {
+                        parentMenuState.openSubmenu();
+                        parentMenuState.isSubmenuLockedOpen = true;
                     }
                 }
                 
                 if (searchInput) {
                     searchInput.value = '';
-                    searchInput.dispatchEvent(new Event('input'));
+                    // Dispara o evento de input para reverter a exibição normal do menu
+                    searchInput.dispatchEvent(new Event('input')); 
                 }
             }
         });
-    });
-
-    window.addEventListener('scroll', () => {
-        const currentHash = window.location.hash;
-        const scrollPosition = window.scrollY + scrollOffset + 1;
-
-        if (window.scrollY === 0 && !currentHash) {
-            return;
-        }
-
-        let linkToActivate = null;
-        let bestMatch = null;
-
-        allMenuLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#') && href.length > 1) {
-                const targetElement = document.querySelector(href);
-                if (targetElement) {
-                    const targetTop = targetElement.offsetTop;
-                    if (scrollPosition >= targetTop) {
-                        bestMatch = link;
-                    }
-                }
-            }
-        });
-
-        if (bestMatch && bestMatch.getAttribute('href') !== currentHash) {
-            history.replaceState(null, null, bestMatch.getAttribute('href'));
-            activateLinkFromHash(bestMatch.getAttribute('href'));
-        } else if (currentHash && !bestMatch) {
-            activateLinkFromHash(currentHash);
-        } else if (bestMatch && bestMatch.getAttribute('href') === currentHash) {
-            activateLinkFromHash(currentHash);
-        }
     });
 
     const currentPath = window.location.hash;
 
     if (currentPath) {
-       activateLinkFromHash(currentPath);
+        let foundActiveLink = false;
+        allMenuLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                setActiveLink(link);
+                activeLinkBeforeSearch = link;
+                foundActiveLink = true;
+
+                const parentMenuContainer = link.closest('.menu');
+                if (parentMenuContainer) {
+                    const parentMenuState = menuStates.get(parentMenuContainer);
+                    if (parentMenuState) {
+                        parentMenuState.openSubmenu();
+                        parentMenuState.isSubmenuLockedOpen = true;
+                    }
+                }
+            }
+        });
 
         const targetElement = document.querySelector(currentPath);
         if (targetElement) {
              window.scrollTo({
-                top: targetElement.offsetTop - scrollOffset,
-                behavior: 'smooth'
-            });
+                 top: targetElement.offsetTop - scrollOffset,
+                 behavior: 'smooth'
+             });
         }
     }
 });
