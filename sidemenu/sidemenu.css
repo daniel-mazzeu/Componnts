@@ -3,11 +3,12 @@ aside.sidemenu {
     top: 15px;
     left: -250px;
     bottom: 15px;
-    z-index: 100;
+    z-index: 10;
     width: 250px;
     border-radius: 15px 0 15px 15px;
     background-color: #111;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transition: left 0.3s ease-in-out;
 }
 
 aside.toggle { left: 15px; }
@@ -24,9 +25,9 @@ aside.sidemenu > button {
     top: 0;
     left: calc(100% - 1px);
     z-index: 100;
-    padding: 6px 15px 6px 10px;
+    padding: 10px 15px 10px 10px;
     border: 0;
-    border-radius: 0 25px 25px 0;
+    border-radius: 0 15px 15px 0;
     cursor: pointer;
     background-color: #111;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -67,7 +68,10 @@ aside.sidemenu > section.header {
 aside.sidemenu > section.body {
     position: relative;
     gap: 5px;
+    margin-top: 130px;
+    margin-bottom: 120px;
     overflow-y: auto;
+    flex-grow: 1;
 }
 
 aside.sidemenu > section.footer {
@@ -163,24 +167,13 @@ aside.sidemenu > section:not(.header) > div.menu > a.link {
     font-size: 12px;
     line-height: 12px;
     color: #777;
+    text-decoration: none;
 }
 
 aside.sidemenu > section:not(.header) > div.menu:hover > a.link,
-aside.sidemenu > section:not(.header) > div.menu:active > a.link,
 aside.sidemenu > section:not(.header) > div.menu.active > a.link {
     color: #fff;
     background-color: #222;
-}
-
-aside.sidemenu > section:not(.header) > div.menu:hover > a.link > i:first-child,
-aside.sidemenu > section:not(.header) > div.menu:active > a.link > i:first-child,
-aside.sidemenu > section:not(.header) > div.menu.active > a.link > i:first-child {
-    animation: 0.5s infinite alternate sidemenu-icons;
-}
-
-@keyframes sidemenu-icons {
-    0% { transform: rotate(20deg) scale(1.1); }
-    100% { transform: rotate(-20deg); }
 }
 
 aside.sidemenu > section:not(.header) > div.menu > a.link > p {
@@ -198,7 +191,6 @@ aside.sidemenu > section:not(.header) > div.menu > a.link > span {
 }
 
 aside.sidemenu > section:not(.header) > div.menu:hover > a.link > span,
-aside.sidemenu > section:not(.header) > div.menu:active > a.link > span,
 aside.sidemenu > section:not(.header) > div.menu.active > a.link > span {
     color: #fff;
 }
@@ -206,16 +198,11 @@ aside.sidemenu > section:not(.header) > div.menu.active > a.link > span {
 aside.sidemenu > section:not(.header) > div.menu > a.link > i:last-child {
     font-size: 12px;
     line-height: 12px;
+    transition: transform 0.3s ease-in-out;
 }
 
-aside.sidemenu > section:not(.header) > div.menu:hover > a.link > i:last-child,
-aside.sidemenu > section:not(.header) > div.menu:active > a.link > i:last-child,
 aside.sidemenu > section:not(.header) > div.menu.active > a.link > i:last-child {
     transform: rotate(180deg);
-}
-
-aside.sidemenu > section:not(.header) > div.menu.remove > a.link > i:last-child {
-    transform: rotate(0deg);
 }
 
 aside.sidemenu > section:not(.header) > div.menu > div.submenu {
@@ -227,44 +214,13 @@ aside.sidemenu > section:not(.header) > div.menu > div.submenu {
     background-color: #222;
     flex-direction: column;
     opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
-aside.sidemenu > section:not(.header) > div.menu > div.submenu::before {
-    content: '';
-    position: absolute;
-    top: -13px;
-    left: calc(100% - 33px);
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 12px solid #111;
-    z-index: 1;
-}
-
-aside.sidemenu > section:not(.header) > div.menu > div.submenu::after {
-    content: '';
-    position: absolute;
-    top: -7px;
-    left: calc(100% - 29.5px);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #222;
-    z-index: 2;
-}
-
-aside.sidemenu > section:not(.header) > div.menu:hover > div.submenu,
-aside.sidemenu > section:not(.header) > div.menu:active > div.submenu,
 aside.sidemenu > section:not(.header) > div.menu.active > div.submenu {
     display: flex;
-    animation: submenu-active 0.3s ease-in forwards;
-}
-
-@keyframes submenu-active {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    opacity: 1;
+    max-height: max-content;
 }
 
 aside.sidemenu > section:not(.header) > div.menu > div.submenu > a:not(:last-child) {
@@ -277,6 +233,7 @@ aside.sidemenu > section:not(.header) > div.menu > div.submenu > a {
     line-height: 12px;
     color: #777;
     padding: 10px;
+    text-decoration: none;
 }
 
 aside.sidemenu > section:not(.header) > div.menu > div.submenu > a:hover,
